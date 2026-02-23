@@ -10,82 +10,44 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]  private float speed;
     
     [SerializeField]  private float jumpForceValue;
-    [SerializeField]  private float jumpForceValueMax;
     [SerializeField]  private float jumpForceMultiplier;
     
-    [SerializeField]  int direction = 1;
+    int direction = 1;
     [SerializeField]  private LayerMask groundLayerMask;
     [SerializeField]  private float groundRaycastLength = 1f;
-
-    [SerializeField] private bool onWall;
-    
-    [SerializeField]  private float lateralRaycastLength = 0.8f;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
+        rb.linearVelocity = new Vector2(speed* direction, rb.linearVelocityY);
+
         if (OnLateralCollision())
         {
-            if (OnGround())
-            {
-                onWall = false;
-                Flip();
-                Debug.Log("Not flippin wall");
-            }
-            else
-            {
-                
-                if (!onWall)
-                {
-                    onWall = true;
-                    Flip();
-                    Debug.Log("Flippin Wall");
-                }
-
-                if (onWall)
-                {
-                    rb.linearVelocity = new Vector2(0, rb.linearVelocityY / 2);
-                }
-
-            }
+            Flip();
             
-            Debug.Log(rb.linearVelocity);
-        }
-
-        else
-        {
-            rb.linearVelocity = new Vector2(speed* direction, rb.linearVelocityY);
+            Debug.Log(direction + " " + speed);
         }
         
-        if (Input.GetKey(KeyCode.Space) && (OnGround() || onWall))
+        if (Input.GetKey(KeyCode.Space) && OnGround())
         {
             jumpForceValue += Time.deltaTime * jumpForceMultiplier;
-            if (OnGround())
-            {
-                rb.linearVelocity = new Vector2(0, rb.linearVelocityY);
-            }
-            else
-            {
-                rb.linearVelocity = new Vector2(0, rb.linearVelocityY/2.5f);
-            }
-
+            rb.linearVelocity = new Vector2(0, rb.linearVelocityY);
             
-            if (jumpForceValue >= jumpForceValueMax)
+            if (jumpForceValue >= 25)
             {
-                jumpForceValue = jumpForceValueMax;
+                jumpForceValue = 25;
             }
         }
 
-        if (Input.GetKeyUp(KeyCode.Space))
+        if (Input.GetKeyUp(KeyCode.Space) && OnGround())
         {
             rb.AddForce(transform.up * jumpForceValue, ForceMode2D.Impulse);
             rb.linearVelocity = new Vector2(speed, rb.linearVelocityY);
             jumpForceValue = 0;
-            onWall = false;
         }
 
 
@@ -93,26 +55,12 @@ public class PlayerMovement : MonoBehaviour
     
     private bool OnLateralCollision()
     {
-        Debug.Log("Colliding With Walls");
-        if (onWall)
-        {
-            return (Physics2D.Raycast(
-                transform.position,
-                Vector2.right * -direction,
-                lateralRaycastLength,
-                groundLayerMask
-            ));
-        }
-        else
-        {
-            return (Physics2D.Raycast(
-                transform.position,
-                Vector2.right * direction,
-                lateralRaycastLength,
-                groundLayerMask
-            ));
-        }
-
+        return (Physics2D.Raycast(
+            transform.position,
+            Vector2.right * direction,
+            0.6f,
+            groundLayerMask
+        ));
     }
     
     void Flip()
@@ -127,14 +75,17 @@ public class PlayerMovement : MonoBehaviour
     
     private bool OnGround()
     {
-        return Physics2D.Raycast(transform.position, -transform.up, groundRaycastLength, groundLayerMask);
+        return Physics2D.Raycast(transform.position, -transform.up, 1f, groundLayerMask);
     }
 
     private void OnDrawGizmos()
     {
-            Debug.DrawRay(transform.position, Vector2.right * direction * lateralRaycastLength, Color.red);
-            
-            Debug.DrawRay(transform.position, -Vector2.up * groundRaycastLength, Color.azure);
+    
+            // Establece el color del Gizmo
+            Gizmos.color = Color.azure;
+    
+            // Dibuja la línea desde la posición actual hasta el objetivo
+            Debug.DrawRay(transform.position, Vector2.right * direction * 1, Color.red);
     
     }
 }
