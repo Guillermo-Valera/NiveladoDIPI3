@@ -5,7 +5,7 @@ public class WindBlower : MonoBehaviour
 {
     [SerializeField] private float distance = 1.5f;
     [SerializeField] private Vector2 capsuleSize = new Vector2(1f, 2f);
-    [SerializeField] private LayerMask enemyLayer; 
+    [SerializeField] private LayerMask playerLayer; 
     [SerializeField] private Vector2 direction = new Vector2(1f, 0f);
     
     void Start()
@@ -16,7 +16,7 @@ public class WindBlower : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        PerformAttack();
+        PerformAttack(direction);
     }
     
     void PerformAttack(Vector2 direction)
@@ -28,8 +28,7 @@ public class WindBlower : MonoBehaviour
             CapsuleDirection2D.Vertical, 
             0f, 
             direction, 
-            distance, 
-            enemyLayer
+            distance, playerLayer
         );
 
         
