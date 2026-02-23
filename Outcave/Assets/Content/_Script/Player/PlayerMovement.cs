@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]  private float groundRaycastLength = 1f;
 
     [SerializeField] private bool onWall;
+    [SerializeField] private float wallSlideFallOff = 1.75f;
     
     [SerializeField]  private float lateralRaycastLength = 0.8f;
 
@@ -70,7 +71,7 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-                rb.linearVelocity = new Vector2(0, rb.linearVelocityY/2.5f);
+                rb.linearVelocity = new Vector2(0, rb.linearVelocityY/wallSlideFallOff);
             }
 
             

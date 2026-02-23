@@ -16,7 +16,7 @@ public class WindBlower : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        PerformAttack();
+        PerformAttack(direction);
     }
     
     void PerformAttack(Vector2 direction)
