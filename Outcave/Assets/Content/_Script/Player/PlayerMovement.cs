@@ -8,7 +8,8 @@ public class PlayerMovement : MonoBehaviour
     private SpriteRenderer sr;
     
     [SerializeField]  private float speed;
-    
+
+    public bool isJumping;
     [SerializeField]  private float jumpForceValue;
     [SerializeField]  private float jumpForceValueMax;
     [SerializeField]  private float jumpForceMultiplier;
@@ -35,7 +36,6 @@ public class PlayerMovement : MonoBehaviour
             {
                 onWall = false;
                 Flip();
-                Debug.Log("Not flippin wall");
             }
             else
             {
@@ -44,25 +44,25 @@ public class PlayerMovement : MonoBehaviour
                 {
                     onWall = true;
                     Flip();
-                    Debug.Log("Flippin Wall");
                 }
 
                 if (onWall)
                 {
-                    rb.linearVelocity = new Vector2(0, rb.linearVelocityY / 2);
+                    rb.linearVelocity = new Vector2(0, rb.linearVelocityY / wallSlideFallOff);
+                    Debug.Log(rb.linearVelocity/wallSlideFallOff);
                 }
 
             }
-            
-            Debug.Log(rb.linearVelocity);
         }
 
         else
         {
+
             rb.linearVelocity = new Vector2(speed* direction, rb.linearVelocityY);
+
         }
         
-        if (Input.GetKey(KeyCode.Space) && (OnGround() || onWall))
+        if (Input.GetKey(KeyCode.Space) && (OnGround() || onWall) && !isJumping)
         {
             jumpForceValue += Time.deltaTime * jumpForceMultiplier;
             if (OnGround())
@@ -87,6 +87,7 @@ public class PlayerMovement : MonoBehaviour
             rb.linearVelocity = new Vector2(speed, rb.linearVelocityY);
             jumpForceValue = 0;
             onWall = false;
+            isJumping = true;
         }
 
 
@@ -94,26 +95,56 @@ public class PlayerMovement : MonoBehaviour
     
     private bool OnLateralCollision()
     {
-        Debug.Log("Colliding With Walls");
+        
+        RaycastHit2D hit;
+        
         if (onWall)
         {
-            return (Physics2D.Raycast(
+
+            hit = (Physics2D.BoxCast(
                 transform.position,
-                Vector2.right * -direction,
-                lateralRaycastLength,
+                new Vector2(lateralRaycastLength, lateralRaycastLength),
+                0,
+                Vector2.right * -direction,0.3f,
                 groundLayerMask
             ));
+
+            // return (Physics2D.Raycast(
+            //     transform.position,
+            //     Vector2.right * -direction,
+            //     lateralRaycastLength,
+            //     groundLayerMask
+            // ));
         }
         else
         {
-            return (Physics2D.Raycast(
+            hit =Physics2D.BoxCast(
                 transform.position,
-                Vector2.right * direction,
-                lateralRaycastLength,
+                new Vector2(lateralRaycastLength, lateralRaycastLength),
+                0,
+                Vector2.right* direction,0.3f,
                 groundLayerMask
-            ));
+            );
+            
+            // return (Physics2D.Raycast(
+            //     transform.position,
+            //     Vector2.right * direction,
+            //     lateralRaycastLength,
+            //     groundLayerMask
+            // ));
         }
 
+        if (hit)
+        {
+            isJumping = false;
+            if (hit.collider.gameObject.GetComponentInParent<IGround>() != null)
+            {
+
+                hit.collider.gameObject.GetComponentInParent<IGround>().OnContact(this);
+            }
+        }
+
+        return hit;
     }
     
     void Flip()
@@ -128,12 +159,29 @@ public class PlayerMovement : MonoBehaviour
     
     private bool OnGround()
     {
-        return Physics2D.Raycast(transform.position, -transform.up, groundRaycastLength, groundLayerMask);
+        
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, -transform.up, groundRaycastLength, groundLayerMask);
+        if (hit)
+        {
+            isJumping = false;
+        }
+        return hit;
+    }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.collider.gameObject.GetComponentInParent<IGround>() != null)
+        {
+            other.collider.gameObject.GetComponentInParent<IGround>().OnContact(this);
+        }
     }
 
     private void OnDrawGizmos()
     {
-            Debug.DrawRay(transform.position, Vector2.right * direction * lateralRaycastLength, Color.red);
+            //Debug.DrawRay(transform.position, Vector2.right * direction * lateralRaycastLength, Color.red);
+            
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireCube(transform.position, new Vector3(lateralRaycastLength, lateralRaycastLength));
             
             Debug.DrawRay(transform.position, -Vector2.up * groundRaycastLength, Color.azure);
     

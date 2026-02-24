@@ -9,14 +9,19 @@ public class FallingPlatform : MonoBehaviour
     
     [SerializeField] float timeForDestroying = 4f;
     [SerializeField] float timeForReconstructing = 10f;
+
+    [SerializeField] bool isBreaking = false;
     
     [SerializeField] Collider2D _collider;
+    
     [SerializeField] SpriteRenderer _spriteRenderer;
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("Player") && other.transform.position.y >= transform.position.y+1)
+        Debug.Log(other.transform.position.y + " / " + transform.position.y+0.5f);
+        if (other.gameObject.CompareTag("Player") && other.transform.position.y >= transform.position.y+ 0.5f && !isBreaking)
         {
             Debug.Log("Falling platform");
+            isBreaking = true;
             StartCoroutine(DestroyPlatform());
         }
     }
@@ -30,6 +35,7 @@ public class FallingPlatform : MonoBehaviour
     private IEnumerator DestroyPlatform()
     {
         yield return new WaitForSeconds(timeForDestroying);
+        isBreaking = false;
         _collider.enabled = false;
         _spriteRenderer.enabled = false;
         
