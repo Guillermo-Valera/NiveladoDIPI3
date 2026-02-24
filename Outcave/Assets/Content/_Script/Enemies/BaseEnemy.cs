@@ -1,49 +1,61 @@
 using UnityEngine;
 
-public class BaseEnemy : MonoBehaviour
+public class BaseEnemy: MonoBehaviour
 {
+    [Header("Configuración de Movimiento")]
+    [SerializeField] private Transform pointA;
+    [SerializeField] private Transform pointB;
+    [SerializeField] private float speed = 3f;
+
     private Rigidbody2D rb;
-    private Animator anim;
-    private SpriteRenderer sr;
-    int direction = 1;
-    [SerializeField]  private float speed;
-   
+    private Transform targetPoint;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+       
+        targetPoint = pointB;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        rb.linearVelocity = new Vector2(speed* direction, rb.linearVelocityY);
-        if (OnLateralCollision())
+        MoveTowardsTarget();
+        CheckDistance();
+    }
+
+    void MoveTowardsTarget()
+    {
+        
+        float direction = (targetPoint.position.x > transform.position.x) ? 1 : -1;
+        
+        
+        rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
+
+        
+        if (direction > 0)
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        else
+            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+    }
+
+    void CheckDistance()
+    {
+        
+        if (Vector2.Distance(transform.position, targetPoint.position) < 0.5f)
         {
-            Flip();
-            
-            Debug.Log(direction + " " + speed);
+            targetPoint = (targetPoint == pointA) ? pointB : pointA;
         }
-        
     }
+
     
-    private bool OnLateralCollision()
+    private void OnDrawGizmos()
     {
-        return (Physics2D.Raycast(
-            transform.position,
-            Vector2.right * direction,
-            0.6f
-           
-            
-        ));
-    }
-    
-    void Flip()
-    {
-        direction = -direction;
-        
-        // Girar visualmente el sprite
-        Vector3 scale = transform.localScale;
-        scale.x *= -1;
-        transform.localScale = scale;
+        if (pointA != null && pointB != null)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawLine(pointA.position, pointB.position);
+            Gizmos.DrawSphere(pointA.position, 0.2f);
+            Gizmos.DrawSphere(pointB.position, 0.2f);
+        }
     }
 }

@@ -16,7 +16,7 @@ public class WindBlower : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        PerformAttack();
+        PerformAttack(direction);
     }
     
     void PerformAttack(Vector2 direction)
@@ -33,7 +33,7 @@ public class WindBlower : MonoBehaviour
         );
 
         
-        if (hit.collider != null)
+        if (hit.rigidbody != null)
         {
             hit.rigidbody.AddForce(direction, ForceMode2D.Impulse);
             
