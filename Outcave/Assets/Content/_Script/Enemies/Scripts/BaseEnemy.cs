@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BaseEnemy: MonoBehaviour
+public class BaseEnemy : MonoBehaviour
 {
     [Header("Configuración de Movimiento")]
     [SerializeField] private Transform pointA;
@@ -8,12 +8,13 @@ public class BaseEnemy: MonoBehaviour
     [SerializeField] private float speed = 3f;
 
     private Rigidbody2D rb;
+    private SpriteRenderer spriteRenderer;
     private Transform targetPoint;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-       
+        spriteRenderer = GetComponent<SpriteRenderer>();
         targetPoint = pointB;
     }
 
@@ -25,29 +26,27 @@ public class BaseEnemy: MonoBehaviour
 
     void MoveTowardsTarget()
     {
-        
         float direction = (targetPoint.position.x > transform.position.x) ? 1 : -1;
-        
-        
         rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
 
-        
         if (direction > 0)
-            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        {
+            spriteRenderer.flipX = false;
+        }
         else
-            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+        {
+            spriteRenderer.flipX = true;
+        }
     }
 
     void CheckDistance()
     {
-        
         if (Vector2.Distance(transform.position, targetPoint.position) < 0.5f)
         {
             targetPoint = (targetPoint == pointA) ? pointB : pointA;
         }
     }
 
-    
     private void OnDrawGizmos()
     {
         if (pointA != null && pointB != null)

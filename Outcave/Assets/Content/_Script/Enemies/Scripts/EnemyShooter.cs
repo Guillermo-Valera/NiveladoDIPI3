@@ -6,6 +6,7 @@ public class EnemyShooter : MonoBehaviour
     public float fireRate = 2f; 
     public float projectileSpeed = 10f; 
     public bool shootRight = true; 
+    public Transform firePoint;
 
     private float nextFireTime;
 
@@ -27,7 +28,7 @@ public class EnemyShooter : MonoBehaviour
         }
 
         
-        GameObject newProjectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
+        GameObject newProjectile = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
 
        
         Projectile projectileScript = newProjectile.GetComponent<Projectile>();

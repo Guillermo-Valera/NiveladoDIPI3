@@ -2,48 +2,31 @@ using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
-    [SerializeField] private float distance = 1.5f;
-    [SerializeField] private Vector2 capsuleSize = new Vector2(1f, 2f);
-    [SerializeField] private LayerMask enemyLayer; 
+    [SerializeField] private GameObject attackPrefab;
+    [SerializeField] private float attackDistance = 1.2f;
     
-    private Rigidbody2D rb;
-
-    void Start()
-    {
-        rb = GetComponent<Rigidbody2D>();
-    }
+    private Vector2 lastDirection = Vector2.right;
 
     void Update()
     {
         float hor = Input.GetAxisRaw("Horizontal");
         float ver = Input.GetAxisRaw("Vertical");
-        Vector2 Dir = new Vector2(hor, ver).normalized;
 
-        
-        if (Dir.magnitude > 0)
+        if (new Vector2(hor, ver).magnitude > 0)
         {
-            PerformAttack(Dir);
+            lastDirection = new Vector2(hor, ver).normalized;
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            PerformAttack();
         }
     }
 
-    void PerformAttack(Vector2 direction)
+    void PerformAttack()
     {
-       
-        RaycastHit2D hit = Physics2D.CapsuleCast(
-            rb.position, 
-            capsuleSize, 
-            CapsuleDirection2D.Vertical, 
-            0f, 
-            direction, 
-            distance, 
-            enemyLayer
-        );
-
-        
-        if (hit.collider != null)
-        {
-            Debug.Log("Hit" + hit.collider.name);
-            
-        }
+        Vector3 spawnPos = transform.position + (Vector3)(lastDirection * attackDistance);
+        GameObject attack = Instantiate(attackPrefab, spawnPos, Quaternion.identity);
+        attack.transform.localScale = new Vector3(2f, 2f, 1f);
     }
 }
