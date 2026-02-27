@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Projectile : MonoBehaviour
 {
@@ -25,7 +26,7 @@ public class Projectile : MonoBehaviour
         
         if (collision.gameObject.CompareTag(playerTag))
         {
-            Destroy(collision.gameObject);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
            
         }
 
