@@ -84,7 +84,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 5
   m_Sprite: {fileID: -5175324271018968305, guid: bab4b8c0bca0ae24f95cef0ce19164d3, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.15874884, g: 1, b: 0.009433806, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -195,6 +195,6 @@ FixedJoint2D:
   m_BreakAction: 2
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: -3.5, y: -1.5}
+  m_ConnectedAnchor: {x: 0.5, y: 0.5}
   m_DampingRatio: 0
   m_Frequency: 0
