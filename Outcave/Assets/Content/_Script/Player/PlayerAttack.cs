@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
@@ -17,7 +18,7 @@ public class PlayerAttack : MonoBehaviour
             lastDirection = new Vector2(hor, ver).normalized;
         }
 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetMouseButton(0))
         {
             PerformAttack();
         }

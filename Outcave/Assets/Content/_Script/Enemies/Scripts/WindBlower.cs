@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement; 
 
 [RequireComponent(typeof(LineRenderer))]
 public class WindBlower : MonoBehaviour
@@ -75,5 +76,13 @@ public class WindBlower : MonoBehaviour
         Gizmos.color = Color.cyan;
         Vector3 center = transform.position + (Vector3)gizmoDir * (distance / 2);
         Gizmos.DrawWireCube(center, new Vector3(distance, capsuleSize.y, 0.1f));
+    }
+    
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
     }
 }
