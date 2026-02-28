@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
@@ -13,12 +12,12 @@ public class PlayerAttack : MonoBehaviour
         float hor = Input.GetAxisRaw("Horizontal");
         float ver = Input.GetAxisRaw("Vertical");
 
-        if (new Vector2(hor, ver).magnitude > 0)
+        if (new Vector2(hor, ver).sqrMagnitude > 0) 
         {
             lastDirection = new Vector2(hor, ver).normalized;
         }
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButtonDown(0))
         {
             PerformAttack();
         }
@@ -26,8 +25,19 @@ public class PlayerAttack : MonoBehaviour
 
     void PerformAttack()
     {
+        
         Vector3 spawnPos = transform.position + (Vector3)(lastDirection * attackDistance);
-        GameObject attack = Instantiate(attackPrefab, spawnPos, Quaternion.identity);
-        attack.transform.localScale = new Vector3(2f, 2f, 1f);
+        
+      
+        float angle = Mathf.Atan2(lastDirection.y, lastDirection.x) * Mathf.Rad2Deg;
+        
+       
+        Quaternion rotation = Quaternion.Euler(0, 0, angle);
+
+      
+        GameObject attack = Instantiate(attackPrefab, spawnPos, rotation);
+        
+      
+        attack.transform.localScale = new Vector3(2f, 1f, 1f);
     }
 }
